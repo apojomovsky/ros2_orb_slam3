@@ -19,9 +19,9 @@ MonocularMode::MonocularMode() :Node("mono_node_cpp")
     // Declare parameters to be passsed from command line
     // https://roboticsbackend.com/rclcpp-params-tutorial-get-set-ros2-params-with-cpp/
     
-    //* Find path to home directory
+    //* Find package share directory so runtime paths are independent of workspace layout.
     homeDir = getenv("HOME");
-    // std::cout<<"Home: "<<homeDir<<std::endl;
+    packageShareDir = ament_index_cpp::get_package_share_directory("ros2_orb_slam3");
     
     // std::cout<<"VLSAM NODE STARTED\n\n";
     RCLCPP_INFO(this->get_logger(), "\nORB-SLAM3-V1 NODE STARTED");
@@ -52,8 +52,8 @@ MonocularMode::MonocularMode() :Node("mono_node_cpp")
     if (vocFilePath == "file_not_set" || settingsFilePath == "file_not_set")
     {
         pass;
-        vocFilePath = homeDir + "/" + packagePath + "orb_slam3/Vocabulary/ORBvoc.txt.bin";
-        settingsFilePath = homeDir + "/" + packagePath + "orb_slam3/config/Monocular/";
+        vocFilePath = packageShareDir + "/orb_slam3/Vocabulary/ORBvoc.txt.bin";
+        settingsFilePath = packageShareDir + "/orb_slam3/config/Monocular/";
     }
 
     // std::cout<<"vocFilePath: "<<vocFilePath<<std::endl;
@@ -187,5 +187,4 @@ void MonocularMode::Img_callback(const sensor_msgs::msg::Image& msg)
     //Sophus::SE3f Twc = Tcw.inverse(); //* Pose with respect to global image coordinate, reserved for future use
 
 }
-
 

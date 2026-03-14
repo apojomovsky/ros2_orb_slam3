@@ -35,7 +35,7 @@ import numpy as np # Python Linear Algebra module
 import cv2 # OpenCV
 
 #* ROS2 imports
-import ament_index_python.packages
+from ament_index_python.packages import get_package_share_directory
 import rclpy
 from rclpy.node import Node
 from rclpy.parameter import Parameter
@@ -70,10 +70,12 @@ class MonoDriver(Node):
         print(f"self.image_seq: {self.image_seq}")
         print()
 
-        # Global path definitions
-        self.home_dir = str(Path.home()) + "/ros2_test/src/ros2_orb_slam3" #! Change this to match path to your workspace
-        self.parent_dir = "TEST_DATASET" #! Change or provide path to the parent directory where data for all image sequences are stored
-        self.image_sequence_dir = self.home_dir + "/" + self.parent_dir + "/" + self.image_seq # Full path to the image sequence folder
+        # Resolve the installed package share so dataset lookup does not depend on workspace naming.
+        self.package_share_dir = get_package_share_directory("ros2_orb_slam3")
+        self.parent_dir = "TEST_DATASET"
+        self.image_sequence_dir = os.path.join(
+            self.package_share_dir, self.parent_dir, self.image_seq
+        )
 
         print(f"self.image_sequence_dir: {self.image_sequence_dir}\n")
 

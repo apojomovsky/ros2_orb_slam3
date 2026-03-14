@@ -18,6 +18,7 @@
 
 //* ROS2 includes
 //* std_msgs in ROS 2 https://docs.ros2.org/foxy/api/std_msgs/index-msg.html
+#include "ament_index_cpp/get_package_share_directory.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 // #include "your_custom_msg_interface/msg/custom_msg_field.hpp" // Example of adding in a custom message
@@ -33,7 +34,7 @@ using std::placeholders::_1; //* TODO why this is suggested in official tutorial
 #include <Eigen/Dense> // Includes Core, Geometry, LU, Cholesky, SVD, QR, and Eigenvalues header file
 
 // Include cv-bridge
-#include <cv_bridge/cv_bridge.h>
+#include <cv_bridge/cv_bridge.hpp>
 
 // Include OpenCV computer vision library
 #include <opencv2/opencv.hpp>
@@ -41,7 +42,7 @@ using std::placeholders::_1; //* TODO why this is suggested in official tutorial
 #include <opencv2/imgproc/imgproc.hpp> // Image processing tools
 #include <opencv2/highgui/highgui.hpp> // GUI tools
 #include <opencv2/core/eigen.hpp>
-#include <image_transport/image_transport.h>
+#include <image_transport/image_transport.hpp>
 
 //* ORB SLAM 3 includes
 #include "System.h" //* Also imports the ORB_SLAM3 namespace
@@ -69,7 +70,7 @@ class MonocularMode : public rclcpp::Node
         
         // Class internal variables
         std::string homeDir = "";
-        std::string packagePath = "ros2_test/src/ros2_orb_slam3/"; //! Change to match path to your workspace
+        std::string packageShareDir = "";
         std::string OPENCV_WINDOW = ""; // Set during initialization
         std::string nodeName = ""; // Name of this node
         std::string vocFilePath = ""; // Path to ORB vocabulary provided by DBoW2 package

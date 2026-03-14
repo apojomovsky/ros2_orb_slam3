@@ -15,6 +15,7 @@ LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules) # REDUNDANT?
 find_package(Python3 REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(std_msgs REQUIRED)
@@ -48,6 +49,7 @@ include_directories(
 
 set(THIS_PACKAGE_INCLUDE_DEPENDS
   rclcpp
+  ament_index_cpp
   rclpy
   std_msgs
   sensor_msgs
@@ -58,6 +60,10 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   Eigen3
   Pangolin
 )
+
+# Build bundled third-party libraries from source so they match the local toolchain.
+add_subdirectory(orb_slam3/Thirdparty/DBoW2)
+add_subdirectory(orb_slam3/Thirdparty/g2o)
 
 #* ORB SLAM3 as a shared library
 # Whenever you add a new .h, .hpp or .cc, .cpp file in the ros2_orb_slam3/orb_slam3/include and os2_orb_slam3/orb_slam3/src directories, make sure to add them here as shown below
@@ -134,21 +140,24 @@ target_link_libraries(orb_slam3_lib
   ${OpenCV_LIBS}
   ${EIGEN3_LIBS}
   ${Pangolin_LIBRARIES}
-  ${PROJECT_SOURCE_DIR}/orb_slam3/Thirdparty/DBoW2/lib/libDBoW2.so
-  ${PROJECT_SOURCE_DIR}/orb_slam3/Thirdparty/g2o/lib/libg2o.so
+  DBoW2
+  g2o
   -lboost_system
   -lboost_serialization
   -lcrypto 
 )
 
+set_target_properties(orb_slam3_lib PROPERTIES
+  BUILD_RPATH "/usr/local/lib"
+  INSTALL_RPATH "/usr/local/lib"
+)
 
-# Find the .so files provided in ros2_orb_slam3/orb_slam3/Thirdparty projects
-set(DBoW2_PATH "${PROJECT_SOURCE_DIR}/orb_slam3/Thirdparty/DBoW2/lib/libDBoW2.so")
-set(g2o_PATH "${PROJECT_SOURCE_DIR}/orb_slam3/Thirdparty/g2o/lib/libg2o.so")
 
-# Install .so files to the lib directory in the install space
-install(FILES ${DBoW2_PATH} DESTINATION lib)
-install(FILES ${g2o_PATH} DESTINATION lib)
+install(TARGETS DBoW2 g2o
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib
+)
 
 
 # Add executable
@@ -162,6 +171,11 @@ ament_target_dependencies(mono_node_cpp
 )
 
 target_link_libraries(mono_node_cpp PUBLIC orb_slam3_lib) # Link a node with the internal shared library
+
+set_target_properties(mono_node_cpp PROPERTIES
+  BUILD_RPATH "/usr/local/lib"
+  INSTALL_RPATH "/usr/local/lib"
+)
 
 
 # Install all the header files in package/package/include
@@ -195,6 +209,17 @@ ament_python_install_package(${PROJECT_NAME}) # Install the modules in ros2_orb_
 install(PROGRAMS
   scripts/mono_driver_node.py
   DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY
+  TEST_DATASET
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install(DIRECTORY
+  orb_slam3/Vocabulary
+  orb_slam3/config
+  DESTINATION share/${PROJECT_NAME}/orb_slam3
 )
 
 
