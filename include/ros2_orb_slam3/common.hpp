@@ -34,7 +34,11 @@ using std::placeholders::_1; //* TODO why this is suggested in official tutorial
 #include <Eigen/Dense> // Includes Core, Geometry, LU, Cholesky, SVD, QR, and Eigenvalues header file
 
 // Include cv-bridge
+#if __has_include(<cv_bridge/cv_bridge.hpp>)
 #include <cv_bridge/cv_bridge.hpp>
+#else
+#include <cv_bridge/cv_bridge.h>
+#endif
 
 // Include OpenCV computer vision library
 #include <opencv2/opencv.hpp>
@@ -42,7 +46,11 @@ using std::placeholders::_1; //* TODO why this is suggested in official tutorial
 #include <opencv2/imgproc/imgproc.hpp> // Image processing tools
 #include <opencv2/highgui/highgui.hpp> // GUI tools
 #include <opencv2/core/eigen.hpp>
+#if __has_include(<image_transport/image_transport.hpp>)
 #include <image_transport/image_transport.hpp>
+#else
+#include <image_transport/image_transport.h>
+#endif
 
 //* ORB SLAM 3 includes
 #include "System.h" //* Also imports the ORB_SLAM3 namespace
