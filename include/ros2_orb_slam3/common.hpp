@@ -26,6 +26,7 @@
 #include "std_msgs/msg/float64.hpp"
 #include <std_msgs/msg/string.hpp>
 #include <std_msgs/msg/bool.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
 #include "sensor_msgs/msg/image.hpp"
 using std::placeholders::_1; //* TODO why this is suggested in official tutorial
 
@@ -83,7 +84,12 @@ class MonocularMode : public rclcpp::Node
         std::string nodeName = ""; // Name of this node
         std::string vocFilePath = ""; // Path to ORB vocabulary provided by DBoW2 package
         std::string settingsFilePath = ""; // Path to settings file provided by ORB_SLAM3 package
+        std::string settingsName = ""; // Settings file name or path for direct live mode
+        std::string imageTopicName = ""; // Image topic for direct live mode
+        std::string poseTopicName = ""; // Pose output topic
+        std::string worldFrame = ""; // Frame for published poses
         bool bSettingsFromPython = false; // Flag set once when experiment setting from python node is received
+        bool liveMode = false; // Read camera images directly from ROS instead of the dataset driver
         
         std::string subexperimentconfigName = ""; // Subscription topic name
         std::string pubconfigackName = ""; // Publisher topic name
@@ -95,9 +101,10 @@ class MonocularMode : public rclcpp::Node
         rclcpp::Publisher<std_msgs::msg::String>::SharedPtr configAck_publisher_;
         rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subImgMsg_subscription_;
         rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr subTimestepMsg_subscription_;
+        rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_publisher_;
 
         //* ORB_SLAM3 related variables
-        ORB_SLAM3::System* pAgent; // pointer to a ORB SLAM3 object
+        ORB_SLAM3::System* pAgent = nullptr; // pointer to a ORB SLAM3 object
         ORB_SLAM3::System::eSensor sensorType;
         bool enablePangolinWindow = false; // Shows Pangolin window output
         bool enableOpenCVWindow = false; // Shows OpenCV window output
@@ -110,6 +117,7 @@ class MonocularMode : public rclcpp::Node
         //* Helper functions
         // ORB_SLAM3::eigenMatXf convertToEigenMat(const std_msgs::msg::Float32MultiArray& msg); // Helper method, converts semantic matrix eigenMatXf, a Eigen 4x4 float matrix
         void initializeVSLAM(std::string& configString); //* Method to bind an initialized VSLAM framework to this node
+        void publishPose(const Sophus::SE3f& Tcw, const std_msgs::msg::Header& header);
 
 
 };

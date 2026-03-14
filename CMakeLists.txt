@@ -19,6 +19,7 @@ find_package(ament_index_cpp REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 # find_package(your_custom_msg_interface REQUIRED)
 find_package(cv_bridge REQUIRED)
@@ -52,6 +53,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   ament_index_cpp
   rclpy
   std_msgs
+  geometry_msgs
   sensor_msgs
   # your_custom_msg_interface
   cv_bridge
